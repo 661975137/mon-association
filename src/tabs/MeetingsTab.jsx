@@ -1,3 +1,17 @@
+export default function MeetingsTab({reunions, members, ...props}) {
+  const [search, setSearch] = useState("");
+  
+  // Vérification de sécurité : si les données ne sont pas encore là, on affiche un chargement
+  if (!reunions || !members) {
+    return <div className="p-10 text-center">Chargement des données...</div>;
+  }
+
+  // Maintenant on peut filtrer sans risque
+  const filtered = reunions.filter(r => (r.titre || "").toLowerCase().includes(search.toLowerCase()))
+                            .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+                            
+  // ... reste du code
+
 import React, { useState } from "react";
 import { Plus, X, Pencil, Trash2, Search, Printer, CheckSquare, Square, ChevronDown, ChevronUp } from "lucide-react";
 
