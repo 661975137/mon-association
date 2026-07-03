@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Plus, X, Pencil, Trash2, Search, Printer, CheckSquare, Square, ChevronDown, ChevronUp } from "lucide-react";
 
 const C={ink:"#1C2541",paper:"#F7F3E9",line:"#DED5BE",cream:"#FCFAF4",brass:"#B8893B",sage:"#4F6F52",rust:"#A8442E",slate:"#6B6558"};
-const FD="Fraunces, serif",FM="'IBM Plex Mono', monospace",FB="'IBM Plex Sans', sans-serif";
+const FD="Fraunces, serif",FB="'IBM Plex Sans', sans-serif";
 const iS={background:C.paper,border:`1px solid ${C.line}`,borderRadius:"2px",padding:"9px 10px",fontSize:"14px",color:C.ink,fontFamily:FB,width:"100%"};
+
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
 function today(){return new Date().toISOString().slice(0,10);}
 function dateF(iso){if(!iso)return"\u2014";const d=new Date(iso);if(isNaN(d.getTime()))return"\u2014";return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"});}
@@ -22,19 +23,13 @@ function printPV(reunion,members,assocName){
   .footer{margin-top:40px;border-top:1px solid #DED5BE;padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:40px;font-size:11px;color:#6B6558;}
   .sig-line{border-bottom:1px solid #1C2541;margin-top:40px;margin-bottom:4px;}
   @media print{body{padding:20px;}}</style></head><body>
-  <div class="header">
-    <h1>${reunion.titre}</h1>
-    <div class="meta">${assocName} &middot; ${dateF(reunion.date)}${reunion.lieu?" &middot; "+reunion.lieu:""}</div>
-  </div>
+  <div class="header"><h1>${reunion.titre}</h1><div class="meta">${assocName} &middot; ${dateF(reunion.date)}${reunion.lieu?" &middot; "+reunion.lieu:""}</div></div>
   ${reunion.ordre_du_jour?`<h2>Ordre du jour</h2><p style="white-space:pre-wrap;line-height:1.6">${reunion.ordre_du_jour}</p>`:""}
   <h2>Presence (${presents.length}/${members.length} membres)</h2>
   <div class="grid">${presents.map(m=>`<div class="member">\u2713 ${m.name}</div>`).join("")}
   ${absents.map(m=>`<div class="member" style="color:#6B6558">\u2717 ${m.name}</div>`).join("")}</div>
   ${reunion.pv?`<h2>Proces-verbal</h2><div class="pv-text">${reunion.pv}</div>`:""}
-  <div class="footer">
-    <div><p>Le Secretaire</p><div class="sig-line"></div><p>Signature</p></div>
-    <div><p>Le President</p><div class="sig-line"></div><p>Signature</p></div>
-  </div>
+  <div class="footer"><div><p>Le Secretaire</p><div class="sig-line"></div><p>Signature</p></div><div><p>Le President</p><div class="sig-line"></div><p>Signature</p></div></div>
   </body></html>`;
   const w=window.open("","_blank","width=800,height=700");
   w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
@@ -60,7 +55,7 @@ function MeetingModal({reunion,members,onClose,onSave,saving}){
             <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Date</span><input type="date" value={form.date||""} onChange={e=>set("date",e.target.value)} style={iS}/></label>
             <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Lieu</span><input value={form.lieu||""} onChange={e=>set("lieu",e.target.value)} placeholder="Ex. Siege" style={iS}/></label>
           </div>
-          <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Ordre du jour</span><textarea value={form.ordre_du_jour||""} onChange={e=>set("ordre_du_jour",e.target.value)} rows={3} placeholder="1. Point financier&#10;2. Cotisations&#10;3. Questions diverses" style={{...iS,resize:"vertical"}}/></label>
+          <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Ordre du jour</span><textarea value={form.ordre_du_jour||""} onChange={e=>set("ordre_du_jour",e.target.value)} rows={3} style={{...iS,resize:"vertical"}}/></label>
           {members.length>0&&<div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Feuille de presence ({form.presents.length}/{members.length})</p>
@@ -75,7 +70,7 @@ function MeetingModal({reunion,members,onClose,onSave,saving}){
               ))}
             </div>
           </div>}
-          <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Proces-verbal</span><textarea value={form.pv||""} onChange={e=>set("pv",e.target.value)} rows={6} placeholder="Rediger ici le compte-rendu de la reunion..." style={{...iS,resize:"vertical"}}/></label>
+          <label className="flex flex-col gap-1.5"><span className="text-xs font-medium uppercase tracking-wide" style={{color:C.slate}}>Proces-verbal</span><textarea value={form.pv||""} onChange={e=>set("pv",e.target.value)} rows={6} style={{...iS,resize:"vertical"}}/></label>
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-sm text-sm font-medium" style={{border:`1px solid ${C.line}`,color:C.slate}}>Annuler</button>
             <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-sm text-sm font-medium" style={{background:C.ink,color:C.cream,opacity:saving?0.6:1}}>{saving?"Enregistrement...":"Enregistrer"}</button>
@@ -108,50 +103,37 @@ function MeetingCard({reunion,members,onEdit,onDelete,onPrint,canEdit,canDelete}
           </div>
         </div>
         {open&&<div className="mt-3 pt-3" style={{borderTop:`1px solid ${C.line}`}}>
-          {reunion.ordre_du_jour&&<div className="mb-3">
-            <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.slate}}>Ordre du jour</p>
-            <p className="text-sm" style={{color:C.ink,whiteSpace:"pre-wrap",lineHeight:"1.6"}}>{reunion.ordre_du_jour}</p>
-          </div>}
+          {reunion.ordre_du_jour&&<div className="mb-3"><p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.slate}}>Ordre du jour</p><p className="text-sm" style={{color:C.ink,whiteSpace:"pre-wrap",lineHeight:"1.6"}}>{reunion.ordre_du_jour}</p></div>}
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
-            {presents.length>0&&<div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.sage}}>Presents ({presents.length})</p>
-              {presents.map(m=><div key={m.id} className="text-sm py-0.5" style={{color:C.ink}}>\u2713 {m.name}</div>)}
-            </div>}
-            {absents.length>0&&<div>
-              <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.rust}}>Absents ({absents.length})</p>
-              {absents.map(m=><div key={m.id} className="text-sm py-0.5" style={{color:C.slate}}>\u2717 {m.name}</div>)}
-            </div>}
+            {presents.length>0&&<div><p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.sage}}>Presents ({presents.length})</p>{presents.map(m=><div key={m.id} className="text-sm py-0.5" style={{color:C.ink}}>\u2713 {m.name}</div>)}</div>}
+            {absents.length>0&&<div><p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.rust}}>Absents ({absents.length})</p>{absents.map(m=><div key={m.id} className="text-sm py-0.5" style={{color:C.slate}}>\u2717 {m.name}</div>)}</div>}
           </div>
-          {reunion.pv&&<div>
-            <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.slate}}>Proces-verbal</p>
-            <p className="text-sm p-3 rounded-sm" style={{color:C.ink,background:C.paper,whiteSpace:"pre-wrap",lineHeight:"1.7",maxHeight:"200px",overflowY:"auto"}}>{reunion.pv}</p>
-          </div>}
+          {reunion.pv&&<div><p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{color:C.slate}}>Proces-verbal</p><p className="text-sm p-3 rounded-sm" style={{color:C.ink,background:C.paper,whiteSpace:"pre-wrap",lineHeight:"1.7",maxHeight:"200px",overflowY:"auto"}}>{reunion.pv}</p></div>}
         </div>}
       </div>
     </div>
   );
 }
 
-export default function MeetingsTab({reunions,members,onNew,onEdit,onDelete,onPrint,currentUser,modal,onCloseModal,onSave,saving,assocName}){
+export default function MeetingsTab({reunions=[],members=[],onNew,onEdit,onDelete,onPrint,currentUser,modal,onCloseModal,onSave,saving,assocName}){
   const [search,setSearch]=useState("");
-  const filtered=reunions.filter(r=>(r.titre||"").toLowerCase().includes(search.toLowerCase())).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  const safeReunions = reunions || [];
+  const filtered = safeReunions.filter(r=>(r.titre||"").toLowerCase().includes(search.toLowerCase())).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
   const cedit=!!(currentUser&&(currentUser.role==="admin"||currentUser.role==="tresorier"||currentUser.role==="secretaire"));
   const cdel=!!(currentUser&&(currentUser.role==="admin"||currentUser.role==="tresorier"));
+  
   return(
     <div className="flex flex-col gap-5">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest" style={{color:C.brass}}>Assemblee</p>
-          <h1 style={{fontFamily:FD,fontStyle:"italic",color:C.ink}} className="text-3xl">Reunions & PV</h1>
-        </div>
+        <div><p className="text-xs uppercase tracking-widest" style={{color:C.brass}}>Assemblee</p><h1 style={{fontFamily:FD,fontStyle:"italic",color:C.ink}} className="text-3xl">Reunions & PV</h1></div>
         {cedit&&<button onClick={onNew} className="inline-flex items-center gap-2 px-4 py-2 rounded-sm text-sm font-medium self-start" style={{background:C.ink,color:C.cream}}><Plus size={15}/> Nouvelle reunion</button>}
       </div>
       <div className="relative">
         <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{color:C.slate}}/>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Rechercher une reunion\u2026" style={{...iS,paddingLeft:"36px"}}/>
       </div>
-      {filtered.length===0
-        ?<div className="text-center py-16 rounded-sm" style={{background:C.cream}}><div className="text-4xl mb-3">\u{1F4CB}</div><p className="text-sm" style={{color:C.slate}}>{reunions.length===0?"Aucune reunion enregistree.":"Aucun resultat."}</p></div>
+      {(filtered || []).length===0
+        ?<div className="text-center py-16 rounded-sm" style={{background:C.cream}}><div className="text-4xl mb-3">\u{1F4CB}</div><p className="text-sm" style={{color:C.slate}}>{safeReunions.length===0?"Aucune reunion enregistree.":"Aucun resultat."}</p></div>
         :<div className="rounded-sm overflow-hidden" style={{background:C.cream}}>
           {filtered.map(r=><MeetingCard key={r.id} reunion={r} members={members} onEdit={onEdit} onDelete={onDelete} onPrint={r=>printPV(r,members,assocName||"Association")} canEdit={cedit} canDelete={cdel}/>)}
         </div>
