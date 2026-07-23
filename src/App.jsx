@@ -427,7 +427,7 @@ function TxRow({tx,onEdit,onDelete,readOnly}) {
 }
 
 /* ===================== MEMBER CARD ===================== */
-function MemberCard({member,annee,onEdit,onDelete,onMarkPaid,onHistory,canEdit,canDelete}) {
+function MemberCard({member,annee,onEdit,onDelete,onMarkPaid,onHistory,canEdit,canDelete,onMobileMoney=null}) {
   const cotAnnee=member.cotisations?.[annee]||{status:"pending",date:""};
   return (
     <div style={{borderBottom:`1px solid ${C.line}`}}>
@@ -719,7 +719,7 @@ function Dashboard({members,transactions,monthlyData,totals,annee,config}) {
 }
 
 /* ===================== MEMBERS TAB ===================== */
-function MembersTab({members,annee,search,onSearch,onNew,onEdit,onDelete,onMarkPaid,onHistory,currentUser}) {
+function MembersTab({members,annee,search,onSearch,onNew,onEdit,onDelete,onMarkPaid,onHistory,currentUser,onMobileMoney=null}) {
   const [filtre,setFiltre]=useState("all");
   const filtered=members.filter(m=>{
     const s=(m.cotisations?.[annee]?.status||"pending");
