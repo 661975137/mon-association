@@ -241,10 +241,10 @@ function LoginPage({onLogin,onBack,onSuperAdmin}){
           </form>
         </div>
         <p className="text-center mt-4 text-xs" style={{color:"rgba(255,255,255,0.3)"}}>Pas encore inscrit ? <button onClick={onBack} style={{color:C.brass,background:"none",border:"none",cursor:"pointer"}}>Créer un espace gratuit</button></p>
-        <p className="text-center mt-2 text-xs">
+        <p className="text-center mt-4 text-xs">
           <button onClick={()=>{setSaMode(v=>!v);setError("");setUsername("");setPassword("");}}
-            style={{color:"rgba(255,255,255,0.15)",background:"none",border:"none",cursor:"pointer",fontSize:"10px"}}>
-            {saMode?"← Retour connexion normale":"···"}
+            style={{color:"rgba(255,255,255,0.3)",background:"none",border:"1px solid rgba(255,255,255,0.15)",borderRadius:"4px",cursor:"pointer",fontSize:"10px",padding:"4px 10px"}}>
+            {saMode?"← Retour connexion normale":"🔧 Accès Super Admin"}
           </button>
         </p>
       </div>
