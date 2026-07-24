@@ -184,20 +184,29 @@ function RegisterPage({onSuccess,onBack}){
 }
 
 /* ===================== LOGIN PAGE SAAS ===================== */
-function LoginPage({onLogin,onBack}){
+function LoginPage({onLogin,onBack,onSuperAdmin}){
   const [username,setUsername]=useState("");
   const [password,setPassword]=useState("");
   const [showPwd,setShowPwd]=useState(false);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
+  const [saMode,setSaMode]=useState(false); // Mode super admin
 
   const submit=async e=>{
     e.preventDefault();
     setLoading(true);setError("");
+
+    // Mode Super Admin
+    if(saMode){
+      const ok=await onSuperAdmin(username,password);
+      if(!ok){setError("Identifiants super admin incorrects.");}
+      setLoading(false);return;
+    }
+
+    // Mode association normale
     const{data,error:err}=await supabase.from("app_users").select("*").ilike("username",username).eq("password",password).maybeSingle();
     if(err||!data){setError("Identifiant ou mot de passe incorrect.");setLoading(false);return;}
     if(!data.association_id){setError("Compte non lié à une association.");setLoading(false);return;}
-    // Vérifier que l'association est validée et active
     const{data:asso}=await supabase.from("associations").select("*").eq("id",data.association_id).maybeSingle();
     if(!asso){setError("Association introuvable.");setLoading(false);return;}
     if(!asso.validated){setError("Votre association est en attente de validation. Merci de patienter.");setLoading(false);return;}
@@ -215,8 +224,8 @@ function LoginPage({onLogin,onBack}){
           <div className="w-12 h-12 rounded-sm flex items-center justify-center mx-auto mb-3" style={{background:"rgba(184,137,59,0.2)",border:`1px solid ${C.brass}`}}>
             <Lock size={18} style={{color:C.brass}}/>
           </div>
-          <h1 style={{fontFamily:FD,fontStyle:"italic",fontSize:"24px",color:C.cream}}>Connexion</h1>
-          <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.4)"}}>Registre Associatif</p>
+          <h1 style={{fontFamily:FD,fontStyle:"italic",fontSize:"24px",color:C.cream}}>{saMode?"Super Admin":"Connexion"}</h1>
+          <p className="text-xs mt-1" style={{color:"rgba(255,255,255,0.4)"}}>{saMode?"Accès administrateur plateforme":"Registre Associatif"}</p>
         </div>
         <div className="p-6 rounded-sm" style={{background:C.cream}}>
           {error&&<div className="p-3 rounded-sm mb-4 text-sm" style={{background:"rgba(168,68,46,0.1)",color:C.rust}}>{error}</div>}
@@ -232,6 +241,12 @@ function LoginPage({onLogin,onBack}){
           </form>
         </div>
         <p className="text-center mt-4 text-xs" style={{color:"rgba(255,255,255,0.3)"}}>Pas encore inscrit ? <button onClick={onBack} style={{color:C.brass,background:"none",border:"none",cursor:"pointer"}}>Créer un espace gratuit</button></p>
+        <p className="text-center mt-2 text-xs">
+          <button onClick={()=>{setSaMode(v=>!v);setError("");setUsername("");setPassword("");}}
+            style={{color:"rgba(255,255,255,0.15)",background:"none",border:"none",cursor:"pointer",fontSize:"10px"}}>
+            {saMode?"← Retour connexion normale":"···"}
+          </button>
+        </p>
       </div>
     </div>
   );
